@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash
 from app.productos import productos
 import app
 import os
-from .forms import NewProductForm
+from .forms import NewProductForm, EditProductForm
 
 # Rutas
 @productos.route('/create', methods = ['GET', 'POST'])
@@ -31,9 +31,24 @@ def listar():
 
 @productos.route('/update/<id_producto>', methods = ['GET', 'POST'])
 def actualizar(id_producto):
-    return 'Aqui vamos a actualizar información de productos con el id ' + id_producto
+    p = app.models.Producto.query.get(id_producto)
+    form = EditProductForm(obj = p)
+    
+    if form.validate_on_submit():
+        form.populate_obj(p)
+        app.db.session.commit()
+        flash(f'Producto {id_producto} editado con éxito')
+        return redirect(url_for('productos.listar'))
+    return render_template('new.html', form = form, p = p)
 
 
 @productos.route('/delete/<id_producto>', methods = ['GET', 'POST'])
 def eliminar(id_producto):
+    id_producto = app.models.Producto.query.get(id_producto)
+    eliminar = id_producto
+    if eliminar:
+        app.db.session.delete(eliminar)
+        app.db.session.commit()
+        flash(f'Producto {id_producto} eliminado')
+        return redirect(url_for('productos.listar'))
     return 'Aqui vamos a eliminar productos con el id ' + id_producto
