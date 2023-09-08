@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for mensaje in get_flashed_messages() %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ mensaje }}
+        </div>
+    {% endfor %}
+    <h1>Lista de productos</h1>
+    <table class="table table-table-hoover" border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Imagen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>
+                    <img src="imagenes/{{ producto.imagen }}" alt="Imagen del producto" style="height: 200px; width: 200px;">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('productos.crear') }}" class="btn btn-info">Nuevo producto</a>
+
+    {% block scripts %}
+        {{ super() }}
+    {% endblock %}
+{% endblock %}
