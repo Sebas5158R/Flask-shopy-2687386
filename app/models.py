@@ -1,14 +1,27 @@
-from app import db
+from app import db, login
+from flask_login import UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
 #modelos - entidades del proyecto
-class Cliente(db.Model):
+class Cliente(db.Model ,UserMixin):
     # Creando las columnas de la base de datos
     __tablename__ = "clientes" # Nombre que va a tener la tabla
     id = db.Column(db.Integer, primary_key = True)
     user_name = db.Column(db.String(100), unique = True)
-    password = db.Column(db.String(100))
+    password = db.Column(db.String(128))
     email= db.Column(db.String(100), unique = True)
+    
+    def set_password(self, password):
+        self.password = generate_password_hash(password = password)
+    
+    def check_password(self, password):
+        return check_password_hash ( self.password, password )
+    
+@login.user_loader
+def load_user(id):
+    return Cliente.query.get(id)
+
 
 class Producto(db.Model):
     __tablename__ = "productos"
